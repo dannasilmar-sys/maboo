@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#153f36">
+  <title>Maboo | Productos y clientes</title>
+  <style>
+    :root {
+      --forest: #173f35;
+      --forest-2: #225748;
+      --sage: #7f9f8b;
+      --mint: #dce9df;
+      --cream: #f6f3ec;
+      --paper: #fffdf9;
+      --ink: #19201d;
+      --muted: #6e7772;
+      --line: #e4e7e2;
+      --danger: #b54848;
+      --warning: #bd7c2c;
+      --success: #32735f;
+      --shadow: 0 18px 45px rgba(23, 63, 53, .10);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .login-screen {
+      min-height: 100vh;
+      padding: 24px;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(127,159,139,.20), transparent 32%),
+        radial-gradient(circle at 85% 90%, rgba(220,233,223,.65), transparent 34%),
+        var(--cream);
+    }
+
+    .login-card {
+      width: min(100%, 420px);
+      padding: 34px;
+      border: 1px solid rgba(23,63,53,.09);
+      border-radius: 26px;
+      background: rgba(255,253,249,.94);
+      box-shadow: var(--shadow);
+    }
+
+    .login-brand { display: flex; align-items: center; gap: 11px; margin-bottom: 34px; color: var(--forest); }
+    .login-brand .brand-mark { background: var(--forest); color: #fff; }
+    .login-brand strong { font-size: 1.2rem; letter-spacing: -.035em; }
+    .login-card h1 { font-size: 1.75rem; }
+    .login-card > p { margin: 9px 0 24px; color: var(--muted); font-size: .82rem; line-height: 1.55; }
+    .login-form { display: grid; gap: 16px; }
+    .login-form .primary-btn { width: 100%; margin-top: 3px; }
+    .login-error { min-height: 18px; margin: -2px 0 0; color: var(--danger); font-size: .7rem; font-weight: 700; }
+    .login-note { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); text-align: center; font-size: .67rem; }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: wait; opacity: .68; }
+    [hidden] { display: none !important; }
+
+    .app-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 248px minmax(0, 1fr);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 28px 18px 22px;
+      color: #fff;
+      background:
+        radial-gradient(circle at 10% 90%, rgba(169, 198, 178, .18), transparent 34%),
+        linear-gradient(160deg, #183e35 0%, #0f2e28 100%);
+      display: flex;
+      flex-direction: column;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 10px 30px;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: #e8f0e9;
+      color: var(--forest);
+      font-weight: 900;
+      letter-spacing: -.08em;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.4);
+    }
+
+    .brand-name { font-size: 1.28rem; font-weight: 800; letter-spacing: -.035em; }
+    .brand-subtitle { font-size: .72rem; color: rgba(255,255,255,.58); margin-top: 1px; }
+
+    .nav-label {
+      margin: 3px 12px 10px;
+      color: rgba(255,255,255,.42);
+      font-size: .67rem;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .nav { display: grid; gap: 6px; }
+
+    .nav-btn {
+      width: 100%;
+      border: 0;
+      padding: 12px 13px;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: rgba(255,255,255,.7);
+      background: transparent;
+      text-align: left;
+      font-weight: 650;
+      transition: .18s ease;
+    }
+
+    .nav-btn:hover { color: #fff; background: rgba(255,255,255,.08); }
+    .nav-btn.active { color: #fff; background: rgba(255,255,255,.13); }
+    .nav-btn svg { width: 19px; height: 19px; opacity: .9; }
+    .nav-count { min-width: 20px; height: 20px; margin-left: auto; padding: 0 6px; border-radius: 999px; display: grid; place-items: center; color: #173f35; background: #dce9df; font-size: .62rem; font-weight: 900; }
+
+    .sidebar-card {
+      margin-top: auto;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 16px;
+      background: rgba(255,255,255,.06);
+    }
+
+    .sidebar-card p { margin: 0 0 12px; font-size: .77rem; line-height: 1.5; color: rgba(255,255,255,.65); }
+
+    .sync-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 11px;
+      color: rgba(255,255,255,.82);
+      font-size: .72rem;
+      font-weight: 760;
+    }
+
+    .sync-dot {
+      width: 8px;
+      height: 8px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: #e9b15d;
+      box-shadow: 0 0 0 4px rgba(233,177,93,.13);
+    }
+
+    .sync-line[data-status="online"] .sync-dot { background: #8ed0aa; box-shadow: 0 0 0 4px rgba(142,208,170,.14); }
+    .sync-line[data-status="offline"] .sync-dot { background: #ef8c83; box-shadow: 0 0 0 4px rgba(239,140,131,.13); }
+
+    .backup-btn {
+      width: 100%;
+      border: 0;
+      padding: 10px 12px;
+      border-radius: 11px;
+      color: var(--forest);
+      background: #eef5ef;
+      font-weight: 800;
+      font-size: .78rem;
+    }
+
+    .admin-profile { display: flex; align-items: center; gap: 10px; margin: 0 2px 14px; padding: 11px 10px; border-radius: 13px; background: rgba(255,255,255,.06); }
+    .admin-avatar { width: 33px; height: 33px; flex: 0 0 auto; border-radius: 10px; display: grid; place-items: center; color: var(--forest); background: #e8f0e9; font-size: .69rem; font-weight: 900; }
+    .admin-info { min-width: 0; flex: 1; }
+    .admin-role { color: #fff; font-size: .7rem; font-weight: 800; }
+    .admin-email { margin-top: 2px; overflow: hidden; color: rgba(255,255,255,.52); font-size: .61rem; white-space: nowrap; text-overflow: ellipsis; }
+    .logout-btn { width: 30px; height: 30px; flex: 0 0 auto; border: 0; border-radius: 9px; display: grid; place-items: center; color: rgba(255,255,255,.65); background: rgba(255,255,255,.07); }
+    .logout-btn:hover { color: #fff; background: rgba(255,255,255,.13); }
+    .logout-btn svg { width: 15px; height: 15px; }
+
+    main { min-width: 0; padding: 34px 38px 48px; }
+    .mobile-bar { display: none; }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 22px;
+      margin-bottom: 29px;
+    }
+
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--sage);
+      font-size: .72rem;
+      font-weight: 850;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    h1 { margin: 0; font-size: clamp(1.8rem, 3vw, 2.55rem); line-height: 1.06; letter-spacing: -.055em; }
+    .welcome { margin: 8px 0 0; color: var(--muted); font-size: .9rem; }
+
+    .primary-btn, .secondary-btn, .ghost-btn, .icon-btn {
+      border: 0;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 800;
+      transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+
+    .primary-btn { padding: 12px 17px; color: #fff; background: var(--forest); box-shadow: 0 10px 24px rgba(23,63,53,.18); }
+    .primary-btn:hover { transform: translateY(-1px); background: var(--forest-2); }
+    .primary-btn svg { width: 17px; height: 17px; }
+    .secondary-btn { padding: 11px 15px; color: var(--forest); background: var(--mint); }
+    .ghost-btn { padding: 11px 15px; color: var(--muted); background: transparent; border: 1px solid var(--line); }
+    .icon-btn { width: 35px; height: 35px; color: var(--muted); background: #f3f5f2; }
+    .icon-btn:hover { color: var(--forest); background: var(--mint); }
+    .icon-btn.danger:hover { color: var(--danger); background: #f8e6e4; }
+    .icon-btn.phone { color: #fff; background: var(--forest); }
+    .icon-btn.phone:hover { color: #fff; background: var(--forest-2); box-shadow: 0 7px 16px rgba(23,63,53,.18); }
+
+    .view { animation: fade .25s ease; }
+    @keyframes fade { from { opacity: 0; transform: translateY(5px); } }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 15px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      position: relative;
+      overflow: hidden;
+      padding: 20px;
+      min-height: 132px;
+      border: 1px solid rgba(23,63,53,.07);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: 0 7px 25px rgba(28,52,44,.045);
+    }
+
+    .stat-card::after {
+      content: "";
+      position: absolute;
+      width: 78px;
+      height: 78px;
+      right: -20px;
+      bottom: -34px;
+      border-radius: 50%;
+      background: var(--mint);
+      opacity: .65;
+    }
+
+    .stat-top { display: flex; justify-content: space-between; gap: 10px; }
+    .stat-label { color: var(--muted); font-size: .77rem; font-weight: 700; }
+    .stat-icon { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; color: var(--forest); background: var(--mint); }
+    .stat-icon svg { width: 17px; height: 17px; }
+    .stat-value { margin-top: 8px; font-size: 1.8rem; font-weight: 850; letter-spacing: -.045em; }
+    .stat-caption { margin-top: 4px; color: var(--muted); font-size: .72rem; }
+    .stat-caption.alert { color: var(--warning); font-weight: 750; }
+
+    .dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr); gap: 18px; }
+    .panel { background: var(--paper); border: 1px solid rgba(23,63,53,.075); border-radius: var(--radius); box-shadow: 0 8px 28px rgba(28,52,44,.045); }
+    .panel-head { padding: 20px 21px 15px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .panel-title { margin: 0; font-size: 1rem; letter-spacing: -.02em; }
+    .panel-link { border: 0; background: transparent; color: var(--forest-2); font-size: .76rem; font-weight: 800; }
+
+    .activity-list { padding: 0 21px 10px; }
+    .activity-item { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-top: 1px solid var(--line); }
+    .activity-avatar { width: 38px; height: 38px; flex: 0 0 auto; border-radius: 12px; display: grid; place-items: center; color: var(--forest); background: var(--mint); font-size: .8rem; font-weight: 850; }
+    .activity-copy { min-width: 0; flex: 1; }
+    .activity-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .82rem; font-weight: 750; }
+    .activity-meta { margin-top: 3px; color: var(--muted); font-size: .7rem; }
+    .activity-price { font-size: .8rem; font-weight: 800; white-space: nowrap; }
+
+    .stock-list { padding: 0 21px 14px; }
+    .stock-item { padding: 14px 0; border-top: 1px solid var(--line); }
+    .stock-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: .78rem; }
+    .stock-name { font-weight: 750; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .stock-count { color: var(--warning); font-size: .7rem; font-weight: 800; white-space: nowrap; }
+    .progress { height: 6px; margin-top: 9px; overflow: hidden; border-radius: 20px; background: #eceeea; }
+    .progress span { display: block; height: 100%; border-radius: inherit; background: var(--warning); }
+
+    .empty-mini { padding: 30px 20px 35px; text-align: center; color: var(--muted); font-size: .79rem; border-top: 1px solid var(--line); }
+
+    .section-tools { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+    .search-wrap { position: relative; width: min(100%, 420px); }
+    .search-wrap svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 17px; height: 17px; color: #929b96; }
+    .search-input { width: 100%; height: 44px; padding: 0 14px 0 41px; outline: none; border: 1px solid var(--line); border-radius: 13px; color: var(--ink); background: var(--paper); }
+    .search-input:focus { border-color: var(--sage); box-shadow: 0 0 0 4px rgba(127,159,139,.13); }
+
+    .table-card { overflow: hidden; border: 1px solid rgba(23,63,53,.08); border-radius: var(--radius); background: var(--paper); box-shadow: 0 8px 28px rgba(28,52,44,.045); }
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    th { padding: 15px 18px; color: var(--muted); background: #f6f7f4; text-align: left; font-size: .68rem; letter-spacing: .055em; text-transform: uppercase; }
+    td { padding: 15px 18px; border-top: 1px solid var(--line); font-size: .78rem; vertical-align: middle; }
+    tbody tr:hover { background: #fdfdfb; }
+    .entity { display: flex; align-items: center; gap: 11px; min-width: 190px; }
+    .entity-avatar { width: 37px; height: 37px; border-radius: 11px; display: grid; place-items: center; color: var(--forest); background: var(--mint); font-size: .75rem; font-weight: 850; text-transform: uppercase; }
+    .entity-name { font-weight: 790; }
+    .entity-sub { margin-top: 3px; color: var(--muted); font-size: .68rem; }
+    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 9px; border-radius: 999px; font-size: .66rem; font-weight: 800; }
+    .badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .badge.ok { color: var(--success); background: #e4f1eb; }
+    .badge.low { color: var(--warning); background: #faedda; }
+    .badge.out { color: var(--danger); background: #f7e4e2; }
+    .actions { display: flex; gap: 6px; justify-content: flex-end; }
+    .number-cell { font-variant-numeric: tabular-nums; }
+
+    .notice-stats { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin-bottom: 18px; }
+    .notice-stat { padding: 17px 18px; border: 1px solid rgba(23,63,53,.08); border-radius: 16px; background: var(--paper); }
+    .notice-stat strong { display: block; font-size: 1.45rem; letter-spacing: -.04em; }
+    .notice-stat span { color: var(--muted); font-size: .72rem; font-weight: 700; }
+    .notice-stat.danger strong { color: var(--danger); }
+    .notice-stat.warning strong { color: var(--warning); }
+    .notice-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; }
+    .notice-list { padding: 0 18px 18px; display: grid; gap: 10px; }
+    .notice-card { padding: 15px; display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 12px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+    .notice-card.overdue { border-color: #edcfca; background: #fffafa; }
+    .notice-card.today { border-color: #ecd9b8; background: #fffcf6; }
+    .notice-card.stale { border-color: #dfe5df; }
+    .notice-icon { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; color: var(--forest); background: var(--mint); }
+    .notice-card.overdue .notice-icon { color: var(--danger); background: #f7e4e2; }
+    .notice-card.today .notice-icon { color: var(--warning); background: #faedda; }
+    .notice-icon svg { width: 18px; height: 18px; }
+    .notice-copy { min-width: 0; }
+    .notice-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .79rem; font-weight: 820; }
+    .notice-detail { margin-top: 3px; color: var(--muted); font-size: .68rem; line-height: 1.4; }
+    .notice-actions { display: flex; align-items: center; gap: 6px; }
+    .mini-btn { height: 32px; padding: 0 10px; border: 0; border-radius: 10px; color: var(--forest); background: var(--mint); font-size: .67rem; font-weight: 800; }
+    .mini-btn.muted { color: var(--muted); background: #f0f2ef; }
+
+    .call-modal { width: min(100%, 900px); }
+    .call-client { padding: 16px 23px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); background: #f7f8f5; }
+    .call-client .entity-avatar { width: 42px; height: 42px; }
+    .call-client-copy { min-width: 0; flex: 1; }
+    .call-client-name { font-size: .9rem; font-weight: 850; }
+    .call-client-phone { margin-top: 3px; color: var(--muted); font-size: .72rem; }
+    .call-now { padding: 9px 12px; border-radius: 11px; display: inline-flex; align-items: center; gap: 7px; color: #fff; background: var(--forest); text-decoration: none; font-size: .7rem; font-weight: 820; }
+    .call-now svg { width: 15px; height: 15px; }
+    .call-layout { display: grid; grid-template-columns: minmax(0,.9fr) minmax(0,1.1fr); }
+    .call-form-side { border-right: 1px solid var(--line); }
+    .call-form-side form { padding: 21px 23px 24px; }
+    .call-section-title { margin: 0 0 16px; font-size: .84rem; font-weight: 850; }
+    .readonly-input { color: var(--muted); background: #f5f6f3; }
+    .history-side { min-width: 0; padding: 21px 23px 24px; }
+    .call-history { max-height: 455px; overflow: auto; display: grid; gap: 11px; }
+    .history-item { position: relative; padding: 14px 15px 14px 17px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+    .history-item::before { content: ""; position: absolute; top: 16px; bottom: 16px; left: 0; width: 3px; border-radius: 3px; background: var(--sage); }
+    .history-date { color: var(--forest-2); font-size: .68rem; font-weight: 830; }
+    .history-notes { margin: 8px 0 0; font-size: .75rem; line-height: 1.5; white-space: pre-wrap; }
+    .history-action { margin-top: 9px; padding: 8px 10px; border-radius: 9px; color: var(--muted); background: #f5f6f3; font-size: .68rem; line-height: 1.4; }
+    .followup-chip { margin-top: 9px; display: inline-flex; align-items: center; gap: 5px; padding: 5px 8px; border-radius: 999px; color: var(--warning); background: #faedda; font-size: .62rem; font-weight: 800; }
+    .followup-chip.done { color: var(--success); background: #e4f1eb; }
+    .history-empty { padding: 46px 15px; color: var(--muted); text-align: center; font-size: .75rem; line-height: 1.55; }
+
+    .empty-state { padding: 68px 20px 74px; text-align: center; }
+    .empty-icon { width: 62px; height: 62px; margin: 0 auto 15px; border-radius: 20px; display: grid; place-items: center; color: var(--forest); background: var(--mint); }
+    .empty-icon svg { width: 27px; height: 27px; }
+    .empty-state h3 { margin: 0 0 7px; font-size: 1rem; }
+    .empty-state p { max-width: 380px; margin: 0 auto 17px; color: var(--muted); font-size: .78rem; line-height: 1.55; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      padding: 20px;
+      display: grid;
+      place-items: center;
+      background: rgba(10, 31, 26, .46);
+      backdrop-filter: blur(5px);
+      animation: fadeIn .18s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } }
+
+    .modal {
+      width: min(100%, 620px);
+      max-height: min(90vh, 760px);
+      overflow: auto;
+      border-radius: 22px;
+      background: var(--paper);
+      box-shadow: 0 28px 80px rgba(10,31,26,.27);
+      animation: pop .22s ease;
+    }
+    @keyframes pop { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+    .modal-head { position: sticky; top: 0; z-index: 2; padding: 21px 23px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); background: rgba(255,253,249,.96); backdrop-filter: blur(8px); }
+    .modal-head h2 { margin: 0; font-size: 1.18rem; letter-spacing: -.035em; }
+    .close-btn { width: 34px; height: 34px; border: 0; border-radius: 50%; color: var(--muted); background: #f0f2ef; font-size: 1.25rem; }
+    .modal form { padding: 22px 23px 24px; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .field { display: grid; gap: 7px; }
+    .field.full { grid-column: 1 / -1; }
+    label { font-size: .72rem; font-weight: 780; }
+    .required { color: var(--danger); }
+    input, select, textarea { width: 100%; outline: none; border: 1px solid var(--line); border-radius: 11px; color: var(--ink); background: #fff; }
+    input, select { height: 43px; padding: 0 12px; }
+    textarea { min-height: 86px; padding: 11px 12px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: var(--sage); box-shadow: 0 0 0 4px rgba(127,159,139,.13); }
+    .hint { color: var(--muted); font-size: .65rem; }
+    .modal-actions { margin-top: 23px; display: flex; justify-content: flex-end; gap: 10px; }
+
+    .confirm-modal { width: min(100%, 410px); padding: 27px; text-align: center; }
+    .confirm-icon { width: 55px; height: 55px; margin: 0 auto 14px; border-radius: 18px; display: grid; place-items: center; color: var(--danger); background: #f8e5e3; }
+    .confirm-icon svg { width: 24px; height: 24px; }
+    .confirm-modal h2 { margin: 0 0 8px; font-size: 1.15rem; }
+    .confirm-modal p { margin: 0; color: var(--muted); font-size: .79rem; line-height: 1.55; }
+    .confirm-modal .modal-actions { justify-content: center; }
+    .danger-btn { padding: 11px 15px; border: 0; border-radius: 12px; color: #fff; background: var(--danger); font-weight: 800; }
+
+    .toast-stack { position: fixed; z-index: 200; right: 22px; bottom: 22px; display: grid; gap: 10px; }
+    .toast { min-width: 260px; padding: 13px 15px; display: flex; align-items: center; gap: 10px; border-radius: 13px; color: #fff; background: var(--forest); box-shadow: var(--shadow); font-size: .77rem; font-weight: 700; animation: toastIn .25s ease; }
+    .toast svg { width: 18px; height: 18px; flex: 0 0 auto; }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(8px); } }
+
+    .mobile-nav { display: none; }
+
+    @media (max-width: 1040px) {
+      .stats-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .dashboard-grid { grid-template-columns: 1fr; }
+      .notice-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      body { padding-bottom: 76px; }
+      .app-shell { display: block; }
+      .sidebar { display: none; }
+      main { padding: 0 17px 28px; }
+      .mobile-bar { height: 68px; display: flex; align-items: center; justify-content: space-between; }
+      .mobile-brand { display: flex; align-items: center; gap: 9px; color: var(--forest); font-weight: 850; }
+      .mobile-brand .brand-mark { width: 34px; height: 34px; border-radius: 11px; background: var(--forest); color: #fff; }
+      .date-chip { padding: 7px 10px; border-radius: 10px; color: var(--muted); background: rgba(255,255,255,.6); font-size: .66rem; font-weight: 700; }
+      .mobile-top-actions { display: flex; align-items: center; gap: 7px; }
+      .mobile-logout { width: 32px; height: 32px; border: 0; border-radius: 10px; display: grid; place-items: center; color: var(--forest); background: rgba(255,255,255,.66); }
+      .mobile-logout svg { width: 15px; height: 15px; }
+      .topbar { align-items: flex-end; margin: 10px 0 23px; }
+      .welcome { display: none; }
+      .topbar .primary-btn { width: 43px; height: 43px; padding: 0; border-radius: 13px; }
+      .topbar .primary-btn span { display: none; }
+      .stats-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 11px; }
+      .stat-card { min-height: 119px; padding: 15px; }
+      .stat-icon { width: 30px; height: 30px; }
+      .stat-value { font-size: 1.52rem; }
+      .section-tools { align-items: stretch; flex-direction: column; }
+      .search-wrap { width: 100%; }
+      .section-tools .primary-btn { width: 100%; }
+      .mobile-nav { position: fixed; z-index: 50; left: 12px; right: 12px; bottom: 10px; height: 62px; padding: 7px; display: grid; grid-template-columns: repeat(4,1fr); border: 1px solid rgba(255,255,255,.4); border-radius: 18px; background: rgba(18,54,46,.96); box-shadow: 0 14px 38px rgba(11,35,29,.27); backdrop-filter: blur(12px); }
+      .mobile-nav .nav-btn { position: relative; padding: 5px; flex-direction: column; justify-content: center; gap: 3px; border-radius: 12px; font-size: .61rem; }
+      .mobile-nav .nav-btn svg { width: 18px; height: 18px; }
+      .mobile-nav .nav-count { position: absolute; top: 3px; margin: 0 0 0 22px; min-width: 17px; height: 17px; padding: 0 4px; font-size: .55rem; }
+      .modal-backdrop { padding: 10px; align-items: end; }
+      .modal { max-height: 92vh; border-radius: 22px 22px 12px 12px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .notice-stats { grid-template-columns: repeat(3,1fr); gap: 8px; }
+      .notice-stat { padding: 13px 10px; }
+      .notice-card { grid-template-columns: auto minmax(0,1fr); }
+      .notice-actions { grid-column: 1 / -1; justify-content: flex-end; }
+      .call-layout { grid-template-columns: 1fr; }
+      .call-form-side { border-right: 0; border-bottom: 1px solid var(--line); }
+      .call-history { max-height: none; }
+      .toast-stack { right: 14px; bottom: 88px; left: 14px; }
+      .toast { min-width: 0; }
+    }
+
+    @media (max-width: 390px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .stat-card { min-height: 108px; }
+    }
+  </style>
+</head>
+<body>
+  <section class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <div class="login-brand"><div class="brand-mark">M</div><strong>maboo</strong></div>
+      <p class="eyebrow">Acceso al sistema</p>
+      <h1>Bienvenida de nuevo</h1>
+      <p>Inicia sesión con una cuenta registrada en Firebase.</p>
+      <form class="login-form" id="loginForm">
+        <div class="field"><label for="loginEmail">Correo electrónico</label><input id="loginEmail" type="email" autocomplete="username" required placeholder="tu@correo.com"></div>
+        <div class="field"><label for="loginPassword">Contraseña</label><input id="loginPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="••••••••"></div>
+        <p class="login-error" id="loginError" role="alert"></p>
+        <button class="primary-btn" id="loginBtn" type="submit">Entrar al panel</button>
+      </form>
+      <div class="login-note">Acceso para usuarios registrados de Maboo.</div>
+    </div>
+  </section>
+
+  <div class="app-shell" id="appShell" hidden>
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">M</div>
+        <div>
+          <div class="brand-name">maboo</div>
+          <div class="brand-subtitle">Control de negocio</div>
+        </div>
+      </div>
+
+      <div class="nav-label">Menú principal</div>
+      <nav class="nav" aria-label="Navegación principal">
+        <button class="nav-btn active" data-view="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
+          Resumen
+        </button>
+        <button class="nav-btn" data-view="products">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="m4.2 7.4 7.8 4.5 7.8-4.5M12 12v9"/></svg>
+          Productos
+        </button>
+        <button class="nav-btn" data-view="clients">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Clientes
+        </button>
+        <button class="nav-btn" data-view="notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
+          Notificaciones <span class="nav-count" data-notification-count hidden>0</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-card">
+        <div class="admin-profile">
+          <div class="admin-avatar" id="userAvatar">US</div>
+          <div class="admin-info"><div class="admin-role" id="userRole">Usuario</div><div class="admin-email" id="adminEmail">—</div></div>
+          <button class="logout-btn" id="logoutBtn" type="button" aria-label="Cerrar sesión"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M10 17l5-5-5-5M15 12H3M14 4h5a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-5"/></svg></button>
+        </div>
+        <div class="sync-line" id="syncStatus" data-status="connecting"><span class="sync-dot"></span><span>Conectando con Firebase…</span></div>
+        <p>Descarga una copia de tus registros para mantenerlos siempre seguros.</p>
+        <button class="backup-btn" id="exportBtn">Exportar respaldo</button>
+      </div>
+    </aside>
+
+    <main>
+      <div class="mobile-bar">
+        <div class="mobile-brand"><div class="brand-mark">M</div> maboo</div>
+        <div class="mobile-top-actions"><div class="date-chip" id="mobileDate"></div><button class="mobile-logout" id="mobileLogoutBtn" type="button" aria-label="Cerrar sesión"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M10 17l5-5-5-5M15 12H3M14 4h5a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-5"/></svg></button></div>
+      </div>
+
+      <header class="topbar">
+        <div>
+          <p class="eyebrow" id="viewEyebrow">Panel de control</p>
+          <h1 id="viewTitle">Todo en orden</h1>
+          <p class="welcome" id="viewSubtitle">Administra la información esencial de tu negocio.</p>
+        </div>
+        <button class="primary-btn" id="quickAddBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          <span>Nuevo producto</span>
+        </button>
+      </header>
+
+      <section class="view" id="dashboardView">
+        <div class="stats-grid">
+          <article class="stat-card">
+            <div class="stat-top"><span class="stat-label">Productos</span><span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="m4.2 7.4 7.8 4.5 7.8-4.5M12 12v9"/></svg></span></div>
+            <div class="stat-value" id="productsCount">0</div>
+            <div class="stat-caption">registrados en catálogo</div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span class="stat-label">Clientes</span><span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg></span></div>
+            <div class="stat-value" id="clientsCount">0</div>
+            <div class="stat-caption">contactos guardados</div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span class="stat-label">Inventario</span><span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M5 7l1 14h12l1-14M9 11v6M15 11v6M9 4h6l1 3H8l1-3Z"/></svg></span></div>
+            <div class="stat-value" id="inventoryValue">$0</div>
+            <div class="stat-caption">valor total estimado</div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span class="stat-label">Stock bajo</span><span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.7 2.6 17a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 3.7a2 2 0 0 0-3.4 0Z"/></svg></span></div>
+            <div class="stat-value" id="lowStockCount">0</div>
+            <div class="stat-caption alert">requieren atención</div>
+          </article>
+        </div>
+
+        <div class="dashboard-grid">
+          <article class="panel">
+            <div class="panel-head"><h2 class="panel-title">Productos recientes</h2><button class="panel-link" data-go="products">Ver catálogo</button></div>
+            <div class="activity-list" id="recentProducts"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><h2 class="panel-title">Inventario por atender</h2><button class="panel-link" data-go="products">Revisar</button></div>
+            <div class="stock-list" id="lowStockList"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" id="productsView" hidden>
+        <div class="section-tools">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+            <input class="search-input" id="productSearch" type="search" placeholder="Buscar por producto, SKU o categoría…" aria-label="Buscar productos">
+          </div>
+          <button class="primary-btn" data-add="product"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Agregar producto</button>
+        </div>
+        <div class="table-card">
+          <div class="table-scroll" id="productsTableWrap">
+            <table>
+              <thead><tr><th>Producto</th><th>SKU</th><th>Categoría</th><th>Precio</th><th>Existencias</th><th>Estado</th><th></th></tr></thead>
+              <tbody id="productsBody"></tbody>
+            </table>
+          </div>
+          <div class="empty-state" id="productsEmpty" hidden>
+            <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="m4.2 7.4 7.8 4.5 7.8-4.5M12 12v9"/></svg></div>
+            <h3 id="productsEmptyTitle">Tu catálogo está listo para comenzar</h3>
+            <p id="productsEmptyText">Agrega tu primer producto para controlar precios y existencias desde un solo lugar.</p>
+            <button class="secondary-btn" data-add="product">Registrar producto</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="clientsView" hidden>
+        <div class="section-tools">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+            <input class="search-input" id="clientSearch" type="search" placeholder="Buscar por nombre, negocio o teléfono…" aria-label="Buscar clientes">
+          </div>
+          <button class="primary-btn" data-add="client"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Agregar cliente</button>
+        </div>
+        <div class="table-card">
+          <div class="table-scroll" id="clientsTableWrap">
+            <table>
+              <thead><tr><th>Cliente</th><th>Negocio</th><th>Teléfono</th><th>Correo</th><th>Registro</th><th></th></tr></thead>
+              <tbody id="clientsBody"></tbody>
+            </table>
+          </div>
+          <div class="empty-state" id="clientsEmpty" hidden>
+            <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg></div>
+            <h3 id="clientsEmptyTitle">Aquí crecerá tu lista de clientes</h3>
+            <p id="clientsEmptyText">Guarda sus datos de contacto y tenlos disponibles cuando los necesites.</p>
+            <button class="secondary-btn" data-add="client">Registrar cliente</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="notificationsView" hidden>
+        <div class="notice-stats">
+          <article class="notice-stat danger"><strong id="overdueCount">0</strong><span>Seguimientos vencidos</span></article>
+          <article class="notice-stat warning"><strong id="todayCount">0</strong><span>Llamadas para hoy</span></article>
+          <article class="notice-stat"><strong id="staleCount">0</strong><span>Más de 7 días sin llamar</span></article>
+        </div>
+        <div class="notice-grid">
+          <article class="panel">
+            <div class="panel-head"><h2 class="panel-title">Seguimientos programados</h2></div>
+            <div class="notice-list" id="followUpNotifications"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><h2 class="panel-title">Clientes sin contacto reciente</h2></div>
+            <div class="notice-list" id="staleNotifications"></div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="mobile-nav" id="mobileNav" aria-label="Navegación móvil" hidden>
+    <button class="nav-btn active" data-view="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>Resumen</button>
+    <button class="nav-btn" data-view="products"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="m4.2 7.4 7.8 4.5 7.8-4.5M12 12v9"/></svg>Productos</button>
+    <button class="nav-btn" data-view="clients"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>Clientes</button>
+    <button class="nav-btn" data-view="notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>Avisos<span class="nav-count" data-notification-count hidden>0</span></button>
+  </nav>
+
+  <div class="modal-backdrop" id="productModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="productModalTitle">
+      <div class="modal-head"><h2 id="productModalTitle">Nuevo producto</h2><button class="close-btn" type="button" data-close aria-label="Cerrar">&times;</button></div>
+      <form id="productForm">
+        <input type="hidden" id="productId">
+        <div class="form-grid">
+          <div class="field full"><label for="productName">Nombre del producto <span class="required">*</span></label><input id="productName" maxlength="80" required placeholder="Ej. Vela aromática Lavanda"></div>
+          <div class="field"><label for="productSku">SKU o código <span class="required">*</span></label><input id="productSku" maxlength="30" required placeholder="Ej. VEL-001"></div>
+          <div class="field"><label for="productCategory">Categoría</label><input id="productCategory" maxlength="40" placeholder="Ej. Hogar"></div>
+          <div class="field"><label for="productPrice">Precio de venta <span class="required">*</span></label><input id="productPrice" type="number" min="0" step="0.01" required placeholder="0.00"></div>
+          <div class="field"><label for="productStock">Existencias <span class="required">*</span></label><input id="productStock" type="number" min="0" step="1" required placeholder="0"></div>
+          <div class="field"><label for="productMinStock">Mínimo de inventario</label><input id="productMinStock" type="number" min="0" step="1" value="5"><span class="hint">Te avisaremos cuando llegue a este nivel.</span></div>
+          <div class="field"><label for="productUnit">Unidad</label><select id="productUnit"><option value="Pieza">Pieza</option><option value="Caja">Caja</option><option value="Paquete">Paquete</option><option value="Kilogramo">Kilogramo</option><option value="Litro">Litro</option></select></div>
+          <div class="field full"><label for="productNotes">Notas</label><textarea id="productNotes" maxlength="250" placeholder="Detalles, proveedor o información adicional…"></textarea></div>
+        </div>
+        <div class="modal-actions"><button type="button" class="ghost-btn" data-close>Cancelar</button><button type="submit" class="primary-btn">Guardar producto</button></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="clientModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="clientModalTitle">
+      <div class="modal-head"><h2 id="clientModalTitle">Nuevo cliente</h2><button class="close-btn" type="button" data-close aria-label="Cerrar">&times;</button></div>
+      <form id="clientForm">
+        <input type="hidden" id="clientId">
+        <div class="form-grid">
+          <div class="field full"><label for="clientName">Nombre completo <span class="required">*</span></label><input id="clientName" maxlength="80" required placeholder="Ej. Andrea Martínez"></div>
+          <div class="field"><label for="clientBusiness">Negocio o empresa</label><input id="clientBusiness" maxlength="80" placeholder="Ej. Casa Bonita"></div>
+          <div class="field"><label for="clientPhone">Teléfono <span class="required">*</span></label><input id="clientPhone" type="tel" maxlength="20" required placeholder="Ej. 378 123 4567"></div>
+          <div class="field full"><label for="clientEmail">Correo electrónico</label><input id="clientEmail" type="email" maxlength="100" placeholder="cliente@correo.com"></div>
+          <div class="field full"><label for="clientNotes">Notas</label><textarea id="clientNotes" maxlength="300" placeholder="Preferencias, dirección o información adicional…"></textarea></div>
+        </div>
+        <div class="modal-actions"><button type="button" class="ghost-btn" data-close>Cancelar</button><button type="submit" class="primary-btn">Guardar cliente</button></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="callModal" hidden>
+    <div class="modal call-modal" role="dialog" aria-modal="true" aria-labelledby="callModalTitle">
+      <div class="modal-head"><h2 id="callModalTitle">Control de llamadas</h2><button class="close-btn" type="button" data-close aria-label="Cerrar">&times;</button></div>
+      <div class="call-client">
+        <div class="entity-avatar" id="callClientAvatar">—</div>
+        <div class="call-client-copy"><div class="call-client-name" id="callClientName">Cliente</div><div class="call-client-phone" id="callClientPhone">—</div></div>
+        <a class="call-now" id="callClientPhoneLink" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.69 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.56 2.81.69A2 2 0 0 1 22 16.92Z"/></svg>Llamar</a>
+      </div>
+      <div class="call-layout">
+        <div class="call-form-side">
+          <form id="callForm">
+            <input type="hidden" id="callClientId">
+            <h3 class="call-section-title">Registrar nueva llamada</h3>
+            <div class="form-grid">
+              <div class="field"><label for="callDate">Fecha</label><input class="readonly-input" id="callDate" readonly></div>
+              <div class="field"><label for="callTime">Hora</label><input class="readonly-input" id="callTime" readonly></div>
+              <div class="field full"><label for="callNotes">¿Qué se habló en la llamada? <span class="required">*</span></label><textarea id="callNotes" maxlength="1000" required placeholder="Escribe el resumen de la conversación…"></textarea></div>
+              <div class="field full"><label for="callAction">Acción o acuerdo <span class="required">*</span></label><textarea id="callAction" maxlength="500" required placeholder="Ej. Enviar cotización, confirmar pedido, compartir catálogo…"></textarea></div>
+              <div class="field full"><label for="callFollowUp">Programar próxima llamada</label><input id="callFollowUp" type="datetime-local"><span class="hint">Opcional. Recibirás un aviso en Notificaciones.</span></div>
+            </div>
+            <div class="modal-actions"><button type="submit" class="primary-btn">Guardar llamada</button></div>
+          </form>
+        </div>
+        <div class="history-side">
+          <h3 class="call-section-title">Historial de llamadas</h3>
+          <div class="call-history" id="callHistory"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="confirmModal" hidden>
+    <div class="modal confirm-modal" role="alertdialog" aria-modal="true">
+      <div class="confirm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 6h18M8 6V4h8v2M19 6l-1 15H6L5 6M10 10v7M14 10v7"/></svg></div>
+      <h2>¿Eliminar registro?</h2>
+      <p id="confirmText">Esta acción no se puede deshacer.</p>
+      <div class="modal-actions"><button type="button" class="ghost-btn" id="cancelDelete">Cancelar</button><button type="button" class="danger-btn" id="confirmDelete">Sí, eliminar</button></div>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
+    import { getAnalytics, isSupported } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js';
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
+    import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
+
+    (() => {
+      'use strict';
+
+      const firebaseConfig = {
+        apiKey: 'AIzaSyAvnXIkEEOzvX9MmsvDQmY-46rBk6oh2Fs',
+        authDomain: 'proyectito-4de19.firebaseapp.com',
+        projectId: 'proyectito-4de19',
+        storageBucket: 'proyectito-4de19.firebasestorage.app',
+        messagingSenderId: '212742594946',
+        appId: '1:212742594946:web:eba7587812a5550b076f9b',
+        measurementId: 'G-Y8PD4SNRC3'
+      };
+      const ADMIN_UID = '8yLh4TeDTqZH2iG3PotIM5TbxLA2';
+
+      const STORAGE = { products: 'maboo_products_v1', clients: 'maboo_clients_v1', calls: 'maboo_calls_v1' };
+      const state = {
+        products: load(STORAGE.products),
+        clients: load(STORAGE.clients),
+        calls: load(STORAGE.calls),
+        currentView: 'dashboard',
+        pendingDelete: null,
+        activeClientId: null
+      };
+      const cloud = { productsLoaded: false, clientsLoaded: false, callsLoaded: false, errorShown: false };
+      let db = null;
+      let auth = null;
+      let cloudListeners = [];
+
+      const viewInfo = {
+        dashboard: { eyebrow: 'Panel de control', title: 'Todo en orden', subtitle: 'Administra la información esencial de tu negocio.', action: 'Nuevo producto' },
+        products: { eyebrow: 'Inventario', title: 'Mis productos', subtitle: 'Consulta precios, existencias y alertas de inventario.', action: 'Nuevo producto' },
+        clients: { eyebrow: 'Directorio', title: 'Mis clientes', subtitle: 'Mantén tus contactos y llamadas siempre a la mano.', action: 'Nuevo cliente' },
+        notifications: { eyebrow: 'Seguimiento', title: 'Notificaciones', subtitle: 'Revisa las llamadas pendientes y los clientes que necesitan atención.', action: '' }
+      };
+
+      const $ = (selector, scope = document) => scope.querySelector(selector);
+      const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
+      const money = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 2 });
+      const date = new Intl.DateTimeFormat('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+      const dateTime = new Intl.DateTimeFormat('es-MX', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+      function load(key) {
+        try {
+          const parsed = JSON.parse(localStorage.getItem(key));
+          return Array.isArray(parsed) ? parsed : [];
+        } catch { return []; }
+      }
+
+      function save() {
+        localStorage.setItem(STORAGE.products, JSON.stringify(state.products));
+        localStorage.setItem(STORAGE.clients, JSON.stringify(state.clients));
+        localStorage.setItem(STORAGE.calls, JSON.stringify(state.calls));
+      }
+
+      function setSyncStatus(status, message) {
+        const indicator = $('#syncStatus');
+        indicator.dataset.status = status;
+        $('span:last-child', indicator).textContent = message;
+      }
+
+      function firebaseMessage(error) {
+        const code = String(error?.code || '');
+        if (code.includes('permission-denied')) return 'Firestore no tiene permisos; usando copia local';
+        if (code.includes('failed-precondition') || code.includes('not-found')) return 'Activa Firestore para sincronizar en la nube';
+        return 'Sin conexión con Firebase; usando copia local';
+      }
+
+      function handleFirebaseError(error) {
+        console.warn('Firebase:', error);
+        const message = firebaseMessage(error);
+        setSyncStatus('offline', message);
+        if (!cloud.errorShown) {
+          cloud.errorShown = true;
+          toast(message);
+        }
+      }
+
+      function connectFirebase() {
+        try {
+          const app = initializeApp(firebaseConfig);
+          db = getFirestore(app);
+          auth = getAuth(app);
+          if (location.protocol !== 'file:') {
+            isSupported().then(supported => { if (supported) getAnalytics(app); }).catch(() => {});
+          }
+
+          onAuthStateChanged(auth, user => {
+            if (user) {
+              const isAdmin = user.uid === ADMIN_UID;
+              $('#loginError').textContent = '';
+              $('#userRole').textContent = isAdmin ? 'Administrador' : 'Usuario';
+              $('#userAvatar').textContent = isAdmin ? 'AD' : 'US';
+              $('#adminEmail').textContent = user.email || 'Cuenta registrada';
+              $('#loginScreen').hidden = true;
+              $('#appShell').hidden = false;
+              $('#mobileNav').hidden = false;
+              setSyncStatus('connecting', 'Conectando con Firebase…');
+              if (!cloudListeners.length) {
+                listenToCollection('products');
+                listenToCollection('clients');
+                listenToCollection('calls');
+              }
+              return;
+            }
+
+            disconnectCloud();
+            $('#appShell').hidden = true;
+            $('#mobileNav').hidden = true;
+            $('#loginScreen').hidden = false;
+          }, error => {
+            console.warn('Firebase Auth:', error);
+            $('#loginError').textContent = 'No fue posible verificar tu sesión. Intenta nuevamente.';
+          });
+        } catch (error) {
+          console.warn('Firebase:', error);
+          $('#loginError').textContent = 'No fue posible iniciar Firebase. Revisa la configuración.';
+        }
+      }
+
+      function disconnectCloud() {
+        cloudListeners.forEach(unsubscribe => unsubscribe());
+        cloudListeners = [];
+        cloud.productsLoaded = false;
+        cloud.clientsLoaded = false;
+        cloud.callsLoaded = false;
+        cloud.errorShown = false;
+      }
+
+      function listenToCollection(name) {
+        const unsubscribe = onSnapshot(collection(db, name), async snapshot => {
+          const loadedKey = `${name}Loaded`;
+          const localRecords = state[name];
+
+          if (!cloud[loadedKey] && snapshot.empty && snapshot.metadata.fromCache) {
+            setSyncStatus('connecting', 'Verificando datos en la nube…');
+            return;
+          }
+
+          if (!cloud[loadedKey] && snapshot.empty && localRecords.length) {
+            cloud[loadedKey] = true;
+            setSyncStatus('connecting', 'Subiendo datos locales…');
+            const results = await Promise.allSettled(
+              localRecords.map(item => setDoc(doc(db, name, item.id), item))
+            );
+            const failed = results.find(result => result.status === 'rejected');
+            if (failed) handleFirebaseError(failed.reason);
+            return;
+          }
+
+          cloud[loadedKey] = true;
+          state[name] = snapshot.docs.map(document => ({ ...document.data(), id: document.id }));
+          save();
+          renderAll();
+          if (cloud.productsLoaded && cloud.clientsLoaded && cloud.callsLoaded) {
+            cloud.errorShown = false;
+            setSyncStatus('online', 'Datos sincronizados');
+          }
+        }, handleFirebaseError);
+        cloudListeners.push(unsubscribe);
+      }
+
+      function syncRecord(collectionName, item) {
+        if (!db || !auth?.currentUser) return;
+        setSyncStatus('connecting', 'Sincronizando cambios…');
+        setDoc(doc(db, collectionName, item.id), item)
+          .then(() => setSyncStatus('online', 'Datos sincronizados'))
+          .catch(handleFirebaseError);
+      }
+
+      function removeCloudRecord(collectionName, id) {
+        if (!db || !auth?.currentUser) return;
+        setSyncStatus('connecting', 'Sincronizando cambios…');
+        deleteDoc(doc(db, collectionName, id))
+          .then(() => setSyncStatus('online', 'Datos sincronizados'))
+          .catch(handleFirebaseError);
+      }
+
+      function uid() {
+        return crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      }
+
+      function escapeHTML(value = '') {
+        return String(value).replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
+      }
+
+      function initials(name = '') {
+        return name.trim().split(/\s+/).slice(0, 2).map(p => p[0]).join('').toUpperCase() || '—';
+      }
+
+      function showView(view) {
+        state.currentView = view;
+        ['dashboard', 'products', 'clients', 'notifications'].forEach(name => {
+          $(`#${name}View`).hidden = name !== view;
+        });
+        $$('.nav-btn[data-view]').forEach(btn => btn.classList.toggle('active', btn.dataset.view === view));
+        const info = viewInfo[view];
+        $('#viewEyebrow').textContent = info.eyebrow;
+        $('#viewTitle').textContent = info.title;
+        $('#viewSubtitle').textContent = info.subtitle;
+        $('#quickAddBtn span').textContent = info.action;
+        $('#quickAddBtn').hidden = view === 'notifications';
+        renderAll();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function statusFor(product) {
+        const stock = Number(product.stock);
+        const minimum = Number(product.minStock);
+        if (stock === 0) return { label: 'Agotado', className: 'out' };
+        if (stock <= minimum) return { label: 'Stock bajo', className: 'low' };
+        return { label: 'Disponible', className: 'ok' };
+      }
+
+      function renderDashboard() {
+        $('#productsCount').textContent = state.products.length;
+        $('#clientsCount').textContent = state.clients.length;
+        const total = state.products.reduce((sum, p) => sum + (Number(p.price) * Number(p.stock)), 0);
+        $('#inventoryValue').textContent = money.format(total);
+        const low = state.products.filter(p => Number(p.stock) <= Number(p.minStock));
+        $('#lowStockCount').textContent = low.length;
+
+        const recent = [...state.products].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0,5);
+        $('#recentProducts').innerHTML = recent.length ? recent.map(p => `
+          <div class="activity-item">
+            <div class="activity-avatar">${escapeHTML(initials(p.name))}</div>
+            <div class="activity-copy"><div class="activity-name">${escapeHTML(p.name)}</div><div class="activity-meta">${escapeHTML(p.category || 'Sin categoría')} · ${escapeHTML(p.sku)}</div></div>
+            <div class="activity-price">${money.format(Number(p.price))}</div>
+          </div>`).join('') : '<div class="empty-mini">Los productos que registres aparecerán aquí.</div>';
+
+        $('#lowStockList').innerHTML = low.length ? low.slice(0,5).map(p => {
+          const ceiling = Math.max(Number(p.minStock) * 2, 1);
+          const width = Math.min(100, Math.max(3, (Number(p.stock) / ceiling) * 100));
+          return `<div class="stock-item"><div class="stock-row"><span class="stock-name">${escapeHTML(p.name)}</span><span class="stock-count">${Number(p.stock)} ${escapeHTML(p.unit || 'Pieza').toLowerCase()}${Number(p.stock) === 1 ? '' : 's'}</span></div><div class="progress"><span style="width:${width}%"></span></div></div>`;
+        }).join('') : '<div class="empty-mini">No hay productos con inventario bajo.</div>';
+      }
+
+      function renderProducts() {
+        const term = $('#productSearch').value.trim().toLowerCase();
+        const filtered = state.products.filter(p => [p.name, p.sku, p.category].some(v => String(v || '').toLowerCase().includes(term)));
+        const isEmpty = filtered.length === 0;
+        $('#productsTableWrap').hidden = isEmpty;
+        $('#productsEmpty').hidden = !isEmpty;
+        $('#productsEmptyTitle').textContent = state.products.length && term ? 'No encontramos coincidencias' : 'Tu catálogo está listo para comenzar';
+        $('#productsEmptyText').textContent = state.products.length && term ? 'Prueba con otro nombre, SKU o categoría.' : 'Agrega tu primer producto para controlar precios y existencias desde un solo lugar.';
+        $('#productsEmpty [data-add]').hidden = Boolean(state.products.length && term);
+        $('#productsBody').innerHTML = filtered.map(p => {
+          const status = statusFor(p);
+          return `<tr>
+            <td><div class="entity"><div class="entity-avatar">${escapeHTML(initials(p.name))}</div><div><div class="entity-name">${escapeHTML(p.name)}</div><div class="entity-sub">${escapeHTML(p.unit || 'Pieza')}</div></div></div></td>
+            <td>${escapeHTML(p.sku)}</td><td>${escapeHTML(p.category || '—')}</td>
+            <td class="number-cell">${money.format(Number(p.price))}</td><td class="number-cell">${Number(p.stock)}</td>
+            <td><span class="badge ${status.className}">${status.label}</span></td>
+            <td><div class="actions"><button class="icon-btn" data-edit-product="${p.id}" aria-label="Editar ${escapeHTML(p.name)}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4L16.5 3.5Z"/></svg></button><button class="icon-btn danger" data-delete-product="${p.id}" aria-label="Eliminar ${escapeHTML(p.name)}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 6h18M8 6V4h8v2M19 6l-1 15H6L5 6M10 10v7M14 10v7"/></svg></button></div></td>
+          </tr>`;
+        }).join('');
+      }
+
+      function renderClients() {
+        const term = $('#clientSearch').value.trim().toLowerCase();
+        const filtered = state.clients.filter(c => [c.name, c.business, c.phone, c.email].some(v => String(v || '').toLowerCase().includes(term)));
+        const isEmpty = filtered.length === 0;
+        $('#clientsTableWrap').hidden = isEmpty;
+        $('#clientsEmpty').hidden = !isEmpty;
+        $('#clientsEmptyTitle').textContent = state.clients.length && term ? 'No encontramos coincidencias' : 'Aquí crecerá tu lista de clientes';
+        $('#clientsEmptyText').textContent = state.clients.length && term ? 'Prueba con otro nombre, negocio, teléfono o correo.' : 'Guarda sus datos de contacto y tenlos disponibles cuando los necesites.';
+        $('#clientsEmpty [data-add]').hidden = Boolean(state.clients.length && term);
+        $('#clientsBody').innerHTML = filtered.map(c => `<tr>
+          <td><div class="entity"><div class="entity-avatar">${escapeHTML(initials(c.name))}</div><div><div class="entity-name">${escapeHTML(c.name)}</div><div class="entity-sub">${escapeHTML(c.notes ? c.notes.slice(0,40) : 'Cliente')}</div></div></div></td>
+          <td>${escapeHTML(c.business || '—')}</td><td>${escapeHTML(c.phone)}</td><td>${escapeHTML(c.email || '—')}</td><td>${date.format(new Date(c.createdAt))}</td>
+          <td><div class="actions"><button class="icon-btn phone" data-call-client="${c.id}" aria-label="Llamadas de ${escapeHTML(c.name)}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.69 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.56 2.81.69A2 2 0 0 1 22 16.92Z"/></svg></button><button class="icon-btn" data-edit-client="${c.id}" aria-label="Editar ${escapeHTML(c.name)}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4L16.5 3.5Z"/></svg></button><button class="icon-btn danger" data-delete-client="${c.id}" aria-label="Eliminar ${escapeHTML(c.name)}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 6h18M8 6V4h8v2M19 6l-1 15H6L5 6M10 10v7M14 10v7"/></svg></button></div></td>
+        </tr>`).join('');
+      }
+
+      function validDate(value) {
+        const parsed = value ? new Date(value) : null;
+        return parsed && !Number.isNaN(parsed.getTime()) ? parsed : null;
+      }
+
+      function lastCallFor(clientId) {
+        return state.calls
+          .filter(call => call.clientId === clientId)
+          .sort((a, b) => new Date(b.occurredAt) - new Date(a.occurredAt))[0] || null;
+      }
+
+      function notificationData() {
+        const now = new Date();
+        const startToday = new Date(now); startToday.setHours(0, 0, 0, 0);
+        const endToday = new Date(now); endToday.setHours(23, 59, 59, 999);
+        const clientsById = new Map(state.clients.map(client => [client.id, client]));
+
+        const followUps = state.calls
+          .filter(call => call.followUpAt && !call.followUpDone && clientsById.has(call.clientId))
+          .map(call => {
+            const when = validDate(call.followUpAt);
+            const status = !when || when < startToday ? 'overdue' : when <= endToday ? 'today' : 'upcoming';
+            return { call, client: clientsById.get(call.clientId), when, status };
+          })
+          .sort((a, b) => (a.when?.getTime() || 0) - (b.when?.getTime() || 0));
+
+        const stale = state.clients.map(client => {
+          const latest = lastCallFor(client.id);
+          const lastContact = validDate(latest?.occurredAt || client.createdAt);
+          const days = lastContact ? Math.floor((now - lastContact) / 86400000) : 0;
+          return { client, latest, lastContact, days };
+        }).filter(item => item.days > 7).sort((a, b) => b.days - a.days);
+
+        return { followUps, stale };
+      }
+
+      function renderNotifications() {
+        const { followUps, stale } = notificationData();
+        const overdue = followUps.filter(item => item.status === 'overdue').length;
+        const today = followUps.filter(item => item.status === 'today').length;
+        const activeCount = overdue + today + stale.length;
+        $('#overdueCount').textContent = overdue;
+        $('#todayCount').textContent = today;
+        $('#staleCount').textContent = stale.length;
+        $$('[data-notification-count]').forEach(badge => {
+          badge.textContent = activeCount > 99 ? '99+' : activeCount;
+          badge.hidden = activeCount === 0;
+        });
+
+        $('#followUpNotifications').innerHTML = followUps.length ? followUps.map(({ call, client, when, status }) => {
+          const label = status === 'overdue' ? 'Vencido' : status === 'today' ? 'Hoy' : 'Programado';
+          return `<div class="notice-card ${status}">
+            <div class="notice-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+            <div class="notice-copy"><div class="notice-name">${escapeHTML(client.name)}</div><div class="notice-detail"><strong>${label}:</strong> ${when ? dateTime.format(when) : 'Fecha no válida'}${call.action ? ` · ${escapeHTML(call.action)}` : ''}</div></div>
+            <div class="notice-actions"><button class="mini-btn" data-call-client="${client.id}">Llamar</button><button class="mini-btn muted" data-complete-followup="${call.id}">Atendido</button></div>
+          </div>`;
+        }).join('') : '<div class="empty-mini">No tienes llamadas programadas pendientes.</div>';
+
+        $('#staleNotifications').innerHTML = stale.length ? stale.map(({ client, latest, days }) => `<div class="notice-card stale">
+          <div class="notice-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3"/><path d="M15 5h6M18 2v6"/></svg></div>
+          <div class="notice-copy"><div class="notice-name">${escapeHTML(client.name)}</div><div class="notice-detail">${days} días sin contacto · ${latest ? `Última llamada: ${dateTime.format(new Date(latest.occurredAt))}` : 'Aún no tiene llamadas registradas'}</div></div>
+          <div class="notice-actions"><button class="mini-btn" data-call-client="${client.id}">Registrar llamada</button></div>
+        </div>`).join('') : '<div class="empty-mini">Todos tus clientes tienen contacto reciente.</div>';
+      }
+
+      function renderCallHistory() {
+        const calls = state.calls
+          .filter(call => call.clientId === state.activeClientId)
+          .sort((a, b) => new Date(b.occurredAt) - new Date(a.occurredAt));
+        $('#callHistory').innerHTML = calls.length ? calls.map(call => `<article class="history-item">
+          <div class="history-date">${dateTime.format(new Date(call.occurredAt))}</div>
+          <p class="history-notes">${escapeHTML(call.notes)}</p>
+          <div class="history-action"><strong>Acción:</strong> ${escapeHTML(call.action)}</div>
+          ${call.followUpAt ? `<div class="followup-chip ${call.followUpDone ? 'done' : ''}">${call.followUpDone ? '✓ Seguimiento atendido' : `Próxima llamada: ${dateTime.format(new Date(call.followUpAt))}`}</div>` : ''}
+        </article>`).join('') : '<div class="history-empty">Todavía no hay llamadas registradas para este cliente.<br>La primera aparecerá aquí automáticamente.</div>';
+      }
+
+      function openCallCenter(clientId) {
+        const client = state.clients.find(item => item.id === clientId);
+        if (!client) return;
+        state.activeClientId = clientId;
+        const now = new Date();
+        $('#callForm').reset();
+        $('#callClientId').value = client.id;
+        $('#callClientName').textContent = client.name;
+        $('#callClientPhone').textContent = client.phone;
+        $('#callClientAvatar').textContent = initials(client.name);
+        $('#callClientPhoneLink').href = `tel:${String(client.phone).replace(/[^\d+]/g, '')}`;
+        $('#callDate').value = now.toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
+        $('#callTime').value = now.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+        renderCallHistory();
+        showModal($('#callModal'), '#callNotes');
+      }
+
+      function renderAll() {
+        renderDashboard();
+        renderProducts();
+        renderClients();
+        renderNotifications();
+        if (state.activeClientId && !$('#callModal').hidden) renderCallHistory();
+      }
+
+      function openModal(type, id = null) {
+        if (type === 'product') {
+          $('#productForm').reset();
+          $('#productMinStock').value = 5;
+          $('#productId').value = '';
+          $('#productModalTitle').textContent = id ? 'Editar producto' : 'Nuevo producto';
+          if (id) {
+            const p = state.products.find(item => item.id === id);
+            if (!p) return;
+            $('#productId').value = p.id; $('#productName').value = p.name; $('#productSku').value = p.sku;
+            $('#productCategory').value = p.category; $('#productPrice').value = p.price; $('#productStock').value = p.stock;
+            $('#productMinStock').value = p.minStock; $('#productUnit').value = p.unit || 'Pieza'; $('#productNotes').value = p.notes || '';
+          }
+          showModal($('#productModal'), '#productName');
+        } else {
+          $('#clientForm').reset();
+          $('#clientId').value = '';
+          $('#clientModalTitle').textContent = id ? 'Editar cliente' : 'Nuevo cliente';
+          if (id) {
+            const c = state.clients.find(item => item.id === id);
+            if (!c) return;
+            $('#clientId').value = c.id; $('#clientName').value = c.name; $('#clientBusiness').value = c.business;
+            $('#clientPhone').value = c.phone; $('#clientEmail').value = c.email; $('#clientNotes').value = c.notes || '';
+          }
+          showModal($('#clientModal'), '#clientName');
+        }
+      }
+
+      function showModal(modal, focusSelector) {
+        modal.hidden = false;
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => $(focusSelector).focus(), 50);
+      }
+
+      function closeModals() {
+        $$('.modal-backdrop').forEach(modal => modal.hidden = true);
+        document.body.style.overflow = '';
+        state.pendingDelete = null;
+      }
+
+      function toast(message) {
+        const item = document.createElement('div');
+        item.className = 'toast';
+        item.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 4 4L19 6"/></svg><span>${escapeHTML(message)}</span>`;
+        $('#toastStack').appendChild(item);
+        setTimeout(() => { item.style.opacity = '0'; item.style.transform = 'translateY(8px)'; }, 2600);
+        setTimeout(() => item.remove(), 2900);
+      }
+
+      function requestDelete(type, id) {
+        const collection = type === 'product' ? state.products : state.clients;
+        const item = collection.find(entry => entry.id === id);
+        if (!item) return;
+        state.pendingDelete = { type, id };
+        $('#confirmText').textContent = `“${item.name}” se eliminará de tus registros. Esta acción no se puede deshacer.`;
+        showModal($('#confirmModal'), '#confirmDelete');
+      }
+
+      function authErrorMessage(error) {
+        const code = String(error?.code || '');
+        if (code.includes('invalid-credential') || code.includes('wrong-password') || code.includes('user-not-found')) return 'El correo o la contraseña no son correctos.';
+        if (code.includes('too-many-requests')) return 'Demasiados intentos. Espera un momento antes de volver a intentar.';
+        if (code.includes('network-request-failed')) return 'No hay conexión. Revisa tu internet e intenta nuevamente.';
+        if (code.includes('operation-not-allowed')) return 'Activa el acceso con correo y contraseña en Firebase.';
+        return 'No fue posible iniciar sesión. Intenta nuevamente.';
+      }
+
+      $('#loginForm').addEventListener('submit', async event => {
+        event.preventDefault();
+        const button = $('#loginBtn');
+        $('#loginError').textContent = '';
+        if (!auth) {
+          $('#loginError').textContent = 'Firebase todavía no está disponible.';
+          return;
+        }
+        button.disabled = true;
+        button.textContent = 'Verificando…';
+        try {
+          await signInWithEmailAndPassword(auth, $('#loginEmail').value.trim(), $('#loginPassword').value);
+          $('#loginPassword').value = '';
+        } catch (error) {
+          console.warn('Inicio de sesión:', error);
+          $('#loginError').textContent = authErrorMessage(error);
+        } finally {
+          button.disabled = false;
+          button.textContent = 'Entrar al panel';
+        }
+      });
+
+      async function logoutAdmin() {
+        if (!auth) return;
+        closeModals();
+        try { await signOut(auth); }
+        catch (error) { toast('No fue posible cerrar la sesión'); }
+      }
+
+      $('#productForm').addEventListener('submit', event => {
+        event.preventDefault();
+        const id = $('#productId').value;
+        const sku = $('#productSku').value.trim();
+        const duplicate = state.products.find(p => p.sku.toLowerCase() === sku.toLowerCase() && p.id !== id);
+        if (duplicate) { toast('Ya existe un producto con ese SKU'); $('#productSku').focus(); return; }
+        const existing = state.products.find(p => p.id === id);
+        const product = {
+          id: id || uid(), name: $('#productName').value.trim(), sku,
+          category: $('#productCategory').value.trim(), price: Number($('#productPrice').value),
+          stock: Number($('#productStock').value), minStock: Number($('#productMinStock').value || 0),
+          unit: $('#productUnit').value, notes: $('#productNotes').value.trim(),
+          createdAt: existing?.createdAt || new Date().toISOString(), updatedAt: new Date().toISOString()
+        };
+        if (existing) Object.assign(existing, product); else state.products.unshift(product);
+        save(); syncRecord('products', product); closeModals(); renderAll(); toast(existing ? 'Producto actualizado' : 'Producto registrado');
+      });
+
+      $('#clientForm').addEventListener('submit', event => {
+        event.preventDefault();
+        const id = $('#clientId').value;
+        const existing = state.clients.find(c => c.id === id);
+        const client = {
+          id: id || uid(), name: $('#clientName').value.trim(), business: $('#clientBusiness').value.trim(),
+          phone: $('#clientPhone').value.trim(), email: $('#clientEmail').value.trim(), notes: $('#clientNotes').value.trim(),
+          createdAt: existing?.createdAt || new Date().toISOString(), updatedAt: new Date().toISOString()
+        };
+        if (existing) Object.assign(existing, client); else state.clients.unshift(client);
+        save(); syncRecord('clients', client); closeModals(); renderAll(); toast(existing ? 'Cliente actualizado' : 'Cliente registrado');
+      });
+
+      $('#callForm').addEventListener('submit', event => {
+        event.preventDefault();
+        const clientId = $('#callClientId').value;
+        const client = state.clients.find(item => item.id === clientId);
+        if (!client) return;
+        const now = new Date();
+        const followUpValue = $('#callFollowUp').value;
+
+        state.calls.filter(call => {
+          const scheduled = validDate(call.followUpAt);
+          return call.clientId === clientId && scheduled && !call.followUpDone && scheduled <= now;
+        }).forEach(call => {
+          call.followUpDone = true;
+          call.updatedAt = now.toISOString();
+          syncRecord('calls', call);
+        });
+
+        const call = {
+          id: uid(),
+          clientId,
+          clientName: client.name,
+          occurredAt: now.toISOString(),
+          notes: $('#callNotes').value.trim(),
+          action: $('#callAction').value.trim(),
+          followUpAt: followUpValue ? new Date(followUpValue).toISOString() : '',
+          followUpDone: false,
+          createdAt: now.toISOString(),
+          updatedAt: now.toISOString()
+        };
+        state.calls.unshift(call);
+        save();
+        syncRecord('calls', call);
+        $('#callNotes').value = '';
+        $('#callAction').value = '';
+        $('#callFollowUp').value = '';
+        $('#callDate').value = now.toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
+        $('#callTime').value = now.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+        renderAll();
+        toast('Llamada guardada en el historial');
+      });
+
+      document.addEventListener('click', event => {
+        const nav = event.target.closest('[data-view]');
+        const go = event.target.closest('[data-go]');
+        const add = event.target.closest('[data-add]');
+        const editProduct = event.target.closest('[data-edit-product]');
+        const editClient = event.target.closest('[data-edit-client]');
+        const deleteProduct = event.target.closest('[data-delete-product]');
+        const deleteClient = event.target.closest('[data-delete-client]');
+        const callClient = event.target.closest('[data-call-client]');
+        const completeFollowUp = event.target.closest('[data-complete-followup]');
+        if (nav) showView(nav.dataset.view);
+        if (go) showView(go.dataset.go);
+        if (add) openModal(add.dataset.add);
+        if (editProduct) openModal('product', editProduct.dataset.editProduct);
+        if (editClient) openModal('client', editClient.dataset.editClient);
+        if (deleteProduct) requestDelete('product', deleteProduct.dataset.deleteProduct);
+        if (deleteClient) requestDelete('client', deleteClient.dataset.deleteClient);
+        if (callClient) openCallCenter(callClient.dataset.callClient);
+        if (completeFollowUp) {
+          const call = state.calls.find(item => item.id === completeFollowUp.dataset.completeFollowup);
+          if (call) {
+            call.followUpDone = true;
+            call.updatedAt = new Date().toISOString();
+            save(); syncRecord('calls', call); renderAll(); toast('Seguimiento marcado como atendido');
+          }
+        }
+        if (event.target.closest('[data-close]')) closeModals();
+        if (event.target.classList.contains('modal-backdrop') && event.target.id !== 'confirmModal') closeModals();
+      });
+
+      $('#quickAddBtn').addEventListener('click', () => openModal(state.currentView === 'clients' ? 'client' : 'product'));
+      $('#logoutBtn').addEventListener('click', logoutAdmin);
+      $('#mobileLogoutBtn').addEventListener('click', logoutAdmin);
+      $('#productSearch').addEventListener('input', renderProducts);
+      $('#clientSearch').addEventListener('input', renderClients);
+      $('#cancelDelete').addEventListener('click', closeModals);
+      $('#confirmDelete').addEventListener('click', () => {
+        if (!state.pendingDelete) return;
+        const { type, id } = state.pendingDelete;
+        if (type === 'product') state.products = state.products.filter(p => p.id !== id);
+        else {
+          state.clients = state.clients.filter(c => c.id !== id);
+          const relatedCalls = state.calls.filter(call => call.clientId === id);
+          state.calls = state.calls.filter(call => call.clientId !== id);
+          relatedCalls.forEach(call => removeCloudRecord('calls', call.id));
+        }
+        removeCloudRecord(type === 'product' ? 'products' : 'clients', id);
+        save(); closeModals(); renderAll(); toast(type === 'product' ? 'Producto eliminado' : 'Cliente eliminado');
+      });
+
+      $('#exportBtn').addEventListener('click', () => {
+        const backup = { app: 'Maboo', exportedAt: new Date().toISOString(), products: state.products, clients: state.clients, calls: state.calls };
+        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url; link.download = `maboo-respaldo-${new Date().toISOString().slice(0,10)}.json`;
+        link.click(); URL.revokeObjectURL(url); toast('Respaldo descargado');
+      });
+
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && $$('.modal-backdrop').some(m => !m.hidden)) closeModals();
+      });
+
+      $('#mobileDate').textContent = new Intl.DateTimeFormat('es-MX', { day: 'numeric', month: 'short' }).format(new Date());
+      renderAll();
+      connectFirebase();
+    })();
+  </script>
+</body>
+</html>
